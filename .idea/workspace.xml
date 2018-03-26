@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/index.html" line="710" mnemonic="9" />
+    <bookmark url="file://$PROJECT_DIR$/index.html" line="711" mnemonic="9" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="682365ea-a3c9-46fe-ba27-775eb5c61eae" name="Default" comment="">
@@ -22,11 +22,11 @@
       <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="427">
-              <caret line="634" column="34" lean-forward="false" selection-start-line="634" selection-start-column="34" selection-end-line="634" selection-end-column="34" />
+            <state relative-caret-position="265">
+              <caret line="625" column="35" lean-forward="false" selection-start-line="625" selection-start-column="35" selection-end-line="625" selection-end-column="35" />
               <folding>
-                <marker date="1522061157642" expanded="true" signature="22987:23154" ph="..." />
-                <marker date="1522061157642" expanded="true" signature="23081:23109" ph="..." />
+                <marker date="1522061274704" expanded="true" signature="23030:23197" ph="..." />
+                <marker date="1522061274704" expanded="true" signature="23124:23152" ph="..." />
               </folding>
             </state>
           </provider>
@@ -180,12 +180,12 @@
       <option name="presentableId" value="Default" />
       <updated>1522020389350</updated>
       <workItem from="1522020394367" duration="28611000" />
-      <workItem from="1522058013282" duration="3159000" />
+      <workItem from="1522058013282" duration="3262000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="31770000" />
+    <option name="totallyTimeSpent" value="31873000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="65" y="24" width="928" height="1056" extended-state="4" />
@@ -225,8 +225,8 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <marker date="1522061157642" expanded="true" signature="22987:23154" ph="..." />
-            <marker date="1522061157642" expanded="true" signature="23081:23109" ph="..." />
+            <marker date="1522061274704" expanded="true" signature="23030:23197" ph="..." />
+            <marker date="1522061274704" expanded="true" signature="23124:23152" ph="..." />
           </folding>
         </state>
       </provider>
@@ -300,8 +300,8 @@
         <state relative-caret-position="-10792">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <marker date="1522061158422" expanded="true" signature="22655:22822" ph="..." />
-            <marker date="1522061158422" expanded="true" signature="22749:22777" ph="..." />
+            <marker date="1522061270628" expanded="true" signature="22655:22822" ph="..." />
+            <marker date="1522061270628" expanded="true" signature="22749:22777" ph="..." />
           </folding>
         </state>
       </provider>
@@ -316,11 +316,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="427">
-          <caret line="634" column="34" lean-forward="false" selection-start-line="634" selection-start-column="34" selection-end-line="634" selection-end-column="34" />
+        <state relative-caret-position="265">
+          <caret line="625" column="35" lean-forward="false" selection-start-line="625" selection-start-column="35" selection-end-line="625" selection-end-column="35" />
           <folding>
-            <marker date="1522061157642" expanded="true" signature="22987:23154" ph="..." />
-            <marker date="1522061157642" expanded="true" signature="23081:23109" ph="..." />
+            <marker date="1522061274704" expanded="true" signature="23030:23197" ph="..." />
+            <marker date="1522061274704" expanded="true" signature="23124:23152" ph="..." />
           </folding>
         </state>
       </provider>

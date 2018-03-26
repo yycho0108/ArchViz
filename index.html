@@ -623,8 +623,9 @@ layout : default
                 format = d3.format(",d");
 
             $.get("assets/arch.json")
-                .done(function() {
+                .done(function(data) {
                     console.log("good");
+                    console.log(data);
                     // exists code
                 }).fail(function() {
                     console.log("bad");
