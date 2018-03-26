@@ -619,7 +619,7 @@
                 format = d3.format(",d");
 
 
-            d3.json("./arch.json", function (err, data) {
+            d3.json("./data/arch.json", function (err, data) {
                 if (err) throw err;
                 var root = d3.hierarchy(data)
                     .sum(function (d) {
