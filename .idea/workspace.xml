@@ -4,11 +4,7 @@
     <bookmark url="file://$PROJECT_DIR$/index.html" line="700" mnemonic="9" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="682365ea-a3c9-46fe-ba27-775eb5c61eae" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/_layouts/default.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
-    </list>
+    <list default="true" id="682365ea-a3c9-46fe-ba27-775eb5c61eae" name="Default" comment="" />
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
     <ignored path="$PROJECT_DIR$/tmp/" />
@@ -94,7 +90,7 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds" extendedState="4">
-    <option name="x" value="992" />
+    <option name="x" value="65" />
     <option name="y" value="24" />
     <option name="width" value="928" />
     <option name="height" value="1056" />
@@ -181,15 +177,15 @@
       <option name="presentableId" value="Default" />
       <updated>1522020389350</updated>
       <workItem from="1522020394367" duration="28611000" />
-      <workItem from="1522058013282" duration="1704000" />
+      <workItem from="1522058013282" duration="1963000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="30315000" />
+    <option name="totallyTimeSpent" value="30574000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="992" y="24" width="928" height="1056" extended-state="4" />
+    <frame x="65" y="24" width="928" height="1056" extended-state="4" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.28987068" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -301,8 +297,8 @@
         <state relative-caret-position="-10792">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <marker date="1522059711766" expanded="true" signature="22655:22822" ph="..." />
-            <marker date="1522059711766" expanded="true" signature="22749:22777" ph="..." />
+            <marker date="1522059799029" expanded="true" signature="22655:22822" ph="..." />
+            <marker date="1522059799029" expanded="true" signature="22749:22777" ph="..." />
           </folding>
         </state>
       </provider>
