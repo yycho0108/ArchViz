@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/index.html" line="697" mnemonic="9" />
+    <bookmark url="file://$PROJECT_DIR$/index.html" line="700" mnemonic="9" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="682365ea-a3c9-46fe-ba27-775eb5c61eae" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/_layouts/default.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
@@ -22,12 +24,22 @@
       <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="301">
-              <caret line="621" column="28" lean-forward="false" selection-start-line="621" selection-start-column="28" selection-end-line="621" selection-end-column="28" />
+            <state relative-caret-position="229">
+              <caret line="623" column="12" lean-forward="false" selection-start-line="623" selection-start-column="12" selection-end-line="623" selection-end-column="12" />
               <folding>
-                <marker date="1522058531198" expanded="true" signature="22653:22820" ph="..." />
-                <marker date="1522058531198" expanded="true" signature="22747:22775" ph="..." />
+                <marker date="1522059709522" expanded="true" signature="22707:22874" ph="..." />
+                <marker date="1522059709522" expanded="true" signature="22801:22829" ph="..." />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="default.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/_layouts/default.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="18">
+              <caret line="1" column="13" lean-forward="false" selection-start-line="1" selection-start-column="13" selection-end-line="1" selection-end-column="13" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -58,6 +70,8 @@
       <find>0.00</find>
       <find>etxt-</find>
       <find>anchor</find>
+      <find>baaseurl</find>
+      <find>baseurl</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -68,6 +82,7 @@
       <list>
         <option value="$PROJECT_DIR$/arch.json" />
         <option value="$PROJECT_DIR$/data/arch.json" />
+        <option value="$PROJECT_DIR$/_layouts/default.html" />
         <option value="$PROJECT_DIR$/index.html" />
       </list>
     </option>
@@ -111,6 +126,11 @@
             <path>
               <item name="Archviz" type="b2602c69:ProjectViewProjectNode" />
               <item name="Archviz" type="462c0819:PsiDirectoryNode" />
+              <item name="_site" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Archviz" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Archviz" type="462c0819:PsiDirectoryNode" />
               <item name="data" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
@@ -124,6 +144,11 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="HbShouldOpenHtmlAsHb" value="" />
     <property name="settings.editor.selected.configurable" value="project.propDebugger" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -156,12 +181,12 @@
       <option name="presentableId" value="Default" />
       <updated>1522020389350</updated>
       <workItem from="1522020394367" duration="28611000" />
-      <workItem from="1522058013282" duration="519000" />
+      <workItem from="1522058013282" duration="1704000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="29130000" />
+    <option name="totallyTimeSpent" value="30315000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="992" y="24" width="928" height="1056" extended-state="4" />
@@ -201,8 +226,8 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <marker date="1522058531198" expanded="true" signature="22653:22820" ph="..." />
-            <marker date="1522058531198" expanded="true" signature="22747:22775" ph="..." />
+            <marker date="1522059709522" expanded="true" signature="22707:22874" ph="..." />
+            <marker date="1522059709522" expanded="true" signature="22801:22829" ph="..." />
           </folding>
         </state>
       </provider>
@@ -231,13 +256,72 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/.gitattributes">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/404.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/browserconfig.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/robots.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/site.webmanifest">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/_site/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-10792">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <marker date="1522059711766" expanded="true" signature="22655:22822" ph="..." />
+            <marker date="1522059711766" expanded="true" signature="22749:22777" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/_layouts/default.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="18">
+          <caret line="1" column="13" lean-forward="false" selection-start-line="1" selection-start-column="13" selection-end-line="1" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="301">
-          <caret line="621" column="28" lean-forward="false" selection-start-line="621" selection-start-column="28" selection-end-line="621" selection-end-column="28" />
+        <state relative-caret-position="229">
+          <caret line="623" column="12" lean-forward="false" selection-start-line="623" selection-start-column="12" selection-end-line="623" selection-end-column="12" />
           <folding>
-            <marker date="1522058531198" expanded="true" signature="22653:22820" ph="..." />
-            <marker date="1522058531198" expanded="true" signature="22747:22775" ph="..." />
+            <marker date="1522059709522" expanded="true" signature="22707:22874" ph="..." />
+            <marker date="1522059709522" expanded="true" signature="22801:22829" ph="..." />
           </folding>
         </state>
       </provider>

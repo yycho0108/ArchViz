@@ -1,4 +1,8 @@
-<!doctype html>
+---
+title : Home
+layout : default
+---
+
 <html class="no-js" lang="">
 <head>
     <meta charset="utf-8">
@@ -617,9 +621,8 @@
             var diameter = +svg.attr("width"),
                 g = svg.append("g").attr("transform", "translate(2,2)"),
                 format = d3.format(",d");
-
-
-            d3.json("./data/arch.json", function (err, data) {
+            
+            d3.json("{{'data/arch.json' | relative_url }}", function (err, data) {
                 if (err) throw err;
                 var root = d3.hierarchy(data)
                     .sum(function (d) {
