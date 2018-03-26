@@ -1,0 +1,551 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script
+        src="https://code.jquery.com/jquery-3.3.1.js"
+        integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+        crossorigin="anonymous"></script>
+
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/springy/2.8.0/springy.js"></script>
+
+    <script>
+
+        if (!String.prototype.format) {
+            String.prototype.format = function () {
+                var args = arguments;
+                return this.replace(/{(\d+)}/g, function (match, number) {
+                    return typeof args[number] != 'undefined'
+                        ? args[number]
+                        : match
+                        ;
+                });
+            };
+        }
+
+        function rcolor() {
+            //https://stackoverflow.com/questions/13563471/random-colors-for-circles-in-d3-js-graph
+            return "hsl(" + Math.random() * 360 + ",50%,40%)";
+        }
+
+        var GraphNode = function (parent, name, desc, color) {
+
+            if (typeof GraphNode.root === 'undefined') {
+                // WARNING : root must ALWAYS be the first element created!
+                GraphNode.root = this;
+            }
+
+            root = (typeof root !== 'undefined') ? root : this;
+            desc = typeof desc !== 'undefined' ? desc : "";
+            color = typeof color !== 'undefined' ? color : rcolor();
+
+            this.parent = parent;
+            this.root = root;
+
+            this.name = name;
+            this.vname = name + "_viz";
+
+            this.desc = desc;
+            this.color = color;
+
+            this.children = [];
+            this.targets = []; //arrow pointers
+            this.flags = {
+                changed: true,
+                expanded: false,
+                hidden: false,
+                length: 1
+            };
+
+            if (parent instanceof GraphNode) {
+                parent.children.push(this);
+            }
+
+            this.svg = parent.append("g")
+                .attr("id", this.name);
+
+            // add text
+            this.txt = this.svg.append("text")
+                .attr("x", 0)
+                .attr("y", 10)
+                .text(this.name)
+                .style("fill", this.color)
+                .style("text-anchor", "middle")
+                .attr("id", this.name + "_txt");
+
+            this.viz = this.get_viz();
+
+
+            // display options :
+            // name-only
+            // name + description
+            // name + children
+        };
+
+        GraphNode.prototype.append = function (n) {
+            return this.svg.append(n);
+        };
+
+        GraphNode.prototype.remove = function (c) {
+            var name;
+
+            if (typeof c === 'string')
+                name = c;
+            else
+                name = c.name;
+
+            this.svg.select("#" + name).remove();
+        };
+        GraphNode.prototype.connect = function (n) {
+            this.targets.push(n);
+        };
+
+        GraphNode.prototype.show = function (show) {
+            show = typeof show !== 'undefined' ? show : true;
+            this.svg.attr("visibility", show ? "visible" : "hidden");
+            this.flags.hidden = !show;
+//
+//                if(show){
+//                    if(this.flags.expanded){
+//                        for(var ci in this.children){
+//                            var child = this.children[ci];
+//                            child.show(true);
+//                        }
+//                    }
+//                    this.flags.hidden = false;
+//                }else{
+//                    this.flags.hidden = true;
+//                }
+        };
+
+        GraphNode.prototype.expand = function (ex) {
+            ex = typeof ex !== 'undefined' ? ex : true;
+            if (ex === this.flags.expanded) return;
+
+            this.flags.changed = true;
+            this.flags.expanded = ex;
+
+            this.viz.style("fill", ex ? "none" : "white");
+
+            for (var ci in this.children) {
+                var child = this.children[ci];
+                child.show(ex);
+            }
+
+            if (ex) {
+                // resize()
+            }
+        };
+
+        GraphNode.prototype.transform = function (t, r, s) {
+            var xstring = 'translate({0},{1}) scale({2})'.format(t[0], t[1], s);
+            console.log(xstring);
+            this.svg.attr('transform', xstring);
+        };
+
+        GraphNode.prototype.layout = function () {
+
+            if (!(this === this.root)) {
+                console.log("Must Be Invoked From Root!");
+                return;
+            }
+            var ni, ci, ti;
+            var node, snode;
+            var child, target;
+            var nodes = this.nodes();
+            var graph = new Springy.Graph();
+            var snodes = {};
+
+            console.log(nodes);
+
+            for (ni in nodes) {
+                node = nodes[ni];
+                snode = graph.newNode({
+                    label: node.name,
+                    mass : 1.0/node.mass,
+                });
+                snodes[node.name] = snode;
+            }
+
+            for (ni in nodes) {
+                node = nodes[ni];
+
+                // 1 : add edge from parent to child
+                for (ci in node.children) {
+                    child = node.children[ci];
+                    graph.newEdge(snodes[node.name], snodes[child.name],
+                        {
+                            length : 1.0,
+                            k : 400.0
+                        });
+                }
+
+                // 2 : add edge from defined connections
+                for (ti in node.targets) {
+                    target = node.targets[ti];
+                    graph.newEdge(snodes[node.name], snodes[target.name],
+                        {
+                            length : 1.0,
+                            k : 100.0 // weaker spring
+                        }
+                    );
+                }
+            }
+
+            // todo : configure params
+            var layout = new Springy.Layout.ForceDirected(
+                graph,
+                0.0, // Override Spring Stiffness
+                200.0, // "Node Repulsion"
+                0.5 // Damping
+            );
+
+            // todo : configure steps, etc.
+            for(var i=0; i<1000000; ++i){
+
+                layout.eachEdge(function(edge, spring){
+                    var d = spring.point2.p.subtract(spring.point1.p); // the direction of the spring
+                    var displacement = spring.length - d.magnitude();
+                    var direction = d.normalise();
+
+                    // apply force to each end point
+                    spring.point1.applyForce(direction.multiply(edge.data.k * displacement * -0.5));
+                    spring.point2.applyForce(direction.multiply(edge.data.k * displacement * 0.5));
+                });
+
+                layout.tick(0.02);
+            }
+
+            for (ni in nodes){
+                node = nodes[ni];
+                snode = snodes[node.name];
+                var p = layout.point(snode).p;
+                console.log(node.name, p.x, p.y);
+                //remember position
+            }
+            //layout.nodePoints[node
+        };
+
+        GraphNode.prototype.nodes = function () {
+            var res = [this];
+
+            for (var ci in this.children) {
+                var child = this.children[ci];
+                res = res.concat(child.nodes());
+            }
+
+            this.mass = res.length;
+
+            return res;
+        };
+
+        GraphNode.prototype.organize = function (atom) {
+            // atom = size of single node
+            if (this.flags.hidden) return [0, 0];
+            if (!this.flags.expanded || this.children.length <= 0) {
+                return atom;
+            }
+
+            // compute respective sizes first
+            var ci, child, s;
+            var sizes = []
+            for (ci in this.children) {
+                child = this.children[ci];
+                s = child.organize();
+                sizes.push(s);
+            }
+
+            // this.resize(size);
+            // return size;
+
+            this.flags.changed = true;
+
+            if (this.children.length <= 0) {
+                return minSize;
+            }
+
+            var w0 = this.svg.attr("width");
+            var h0 = this.svg.attr("height");
+
+
+            // then organize units ...
+
+            for (var ci in this.children) {
+                console.log(ci);
+                var child = this.children[ci];
+
+                // define position + scale
+                // TODO : intelligently layout child nodes
+                var x = 250;
+                var y = 250;
+                var s = 0.8;
+
+                // derived values
+                var w = w0 * s;
+                var h = h0 * s;
+                var t = [x - w / 2., y - h / 2.];
+
+                child.resize(w, h);
+                child.transform(t, 0, 1);
+
+                var child_node = child.svg.node();
+                console.log(child_node);
+                child_node.parentNode.appendChild(child_node);
+            }
+
+            for (var ci in this.children) {
+
+            }
+
+            // grow_to_fill()
+            // position_children();
+
+            // returns estimated size
+        };
+
+        GraphNode.prototype.compute_length = function () {
+            // returns estimated size
+            if (this.flags.hidden) return 0;
+            if (!this.flags.expanded) return 1;
+            if (!this.changed) return this.flags.length;
+
+            var x = 1; // self
+            for (var ci in this.children) {
+                var child = this.children[ci];
+                x += child.compute_length();
+            }
+            this.flags.length = x;
+            return x;
+        };
+
+        GraphNode.prototype.resize = function (w, h) {
+            w = typeof w !== 'undefined' ? w : this.svg.attr("width");
+            h = typeof h !== 'undefined' ? w : this.svg.attr("width");
+
+            this.svg
+                .attr("width", w)
+                .attr("height", h);
+            if (this.flags.expanded) {
+                // rounded rect
+                this.viz
+                    .attr("x", 1)
+                    .attr("y", 1)
+                    .attr("width", w - 1)
+                    .attr("height", h - 1)
+                    .attr("rx", w / 10.) // TODO : hardcoded
+                    .attr("ry", h / 10.);
+            } else {
+                // ellipse
+                this.viz
+                    .attr("cx", w / 2.)
+                    .attr("cy", h / 2.)
+                    .attr("rx", w / 2.)
+                    .attr("ry", h / 2.);
+
+            }
+            this.txt
+                .attr("x", w / 2.)
+                .attr("y", h / 16.);
+        };
+
+        GraphNode.prototype.get_viz = function () {
+            // remove in case previous viz exists
+            this.remove(this.vname);
+
+            // new viz ...
+            var viz;
+            if (this.flags.expanded) {
+                viz = this.svg.append("rect")
+                    .attr("x", function (d) {
+                        return 0;
+                    })
+                    .attr("y", function (d) {
+                        return 0;
+                    })
+                    .attr("rx", function (d) {
+                        return 0;
+                    })
+                    .attr("ry", function (d) {
+                        return 0;
+                    })
+                    .attr("width", function (d) {
+                        return 0;
+                    })
+                    .attr("height", function (d) {
+                        return 0;
+                    })
+                    .style("stroke", this.color)
+                    .style("fill", "white")
+                    .attr("id", this.vname);
+            } else {
+                viz = this.svg.append("ellipse")
+                    .attr("cx", function (d) {
+                        return 0;
+                    })
+                    .attr("cy", function (d) {
+                        return 0;
+                    })
+                    .attr("rx", function (d) {
+                        return 0;
+                    })
+                    .attr("ry", function (d) {
+                        return 0;
+                    })
+                    .style("stroke", this.color)
+                    .style("fill", "white")
+                    .attr("id", this.vname);
+            }
+
+            // == this.txt.moveToFront();
+            var text_node = this.txt.node();
+            text_node.parentNode.appendChild(text_node);
+
+            return viz;
+        };
+
+        GraphNode.prototype.update = function () {
+            // update connections to other nodes
+            if (!this.flags.changed) return;
+            if (this === GraphNode.root) {
+                // only the root element needs to update cache
+                this.compute_length();
+            }
+
+            this.viz = this.get_viz();
+            this.viz.style("fill", this.flags.expanded ? "none" : "white");
+
+            this.resize();
+
+            for (var ti in this.targets) {
+                var target = this.targets[ti];
+            }
+
+            // if(this.children.length>0){
+            // show_expansion_button();
+            // }
+            //
+        };
+
+        function createNode(svg, x, y, txt) {
+            var g = svg.append("g");
+            g.append("ellipse")
+                .attr("cx", function (d) {
+                    return x;
+                })
+                .attr("cy", function (d) {
+                    return y;
+                })
+                .attr("rx", function (d) {
+                    return 100;
+                })
+                .attr("ry", function (d) {
+                    return 100;
+                });
+            return g;
+        }
+
+        function qn(parent, name){
+            // shortcut
+            return new GraphNode(parent, name);
+        }
+
+        function pm_arch(root){
+
+            var n_env = qn(root, "Environment");
+            var n_sen = qn(root, "Sensing");
+            var n_nav = qn(root, "Navigation");
+            var n_obj = qn(root, "Objective");
+
+            var n_stl = qn(n_env, "Simulation");
+            var n_htl = qn(n_env, "Real Life");
+
+            var n_obs = qn(n_sen, "Obstacle Detection");
+            var n_odt = qn(n_sen, "Object Detection");
+            var n_loc = qn(n_sen, "Localization");
+            var n_map = qn(n_sen, "Mapping");
+
+            var n_lnav = qn(n_nav, "Local Navigation");
+            var n_gnav = qn(n_nav, "Global Navigation");
+
+            var n_usr = qn(n_obj, "User Interface");
+            var n_arb = qn(n_obj, "Arbiter");
+            var n_aut = qn(n_obj, "Autonomy");
+
+            n_env.connect(n_sen);
+            n_nav.connect(n_env);
+            n_sen.connect(n_nav);
+
+            n_obs.connect(n_lnav);
+            n_loc.connect(n_gnav);
+            n_map.connect(n_gnav);
+            n_odt.connect(n_aut);
+
+            n_aut.connect(n_arb);
+            n_usr.connect(n_aut);
+            n_arb.connect(n_usr);
+            n_usr.connect(n_arb);
+
+            n_arb.connect(n_nav);
+
+
+        }
+        $(document).ready(function () {
+            var svg = d3.select("body").append("svg")
+                .attr("width", 500)
+                .attr("height", 500);
+
+
+            var root = new GraphNode(svg, "root", "");
+            root.resize(500, 500);
+            pm_arch(root);
+
+            // final calls ...
+            root.expand();
+            //root.organize();
+            root.layout();
+            root.update();
+            root.show();
+
+        });
+
+    </script>
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="apple-touch-icon" href="icon.png">
+    <!-- Place favicon.ico in the root directory -->
+
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/main.css">
+
+</head>
+<body>
+<!--[if lte IE 9]>
+<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade
+    your browser</a> to improve your experience and security.</p>
+<![endif]-->
+
+<!-- Add your site or application content here -->
+<script src="js/vendor/modernizr-3.5.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+<script>window.jQuery || document.write('<script src="js/vendor/jquery-3.2.1.min.js"><\/script>')</script>
+<script src="js/plugins.js"></script>
+<script src="js/main.js"></script>
+
+<!-- Google Analytics: change UA-XXXXX-Y to be your site's ID. -->
+<script>
+    window.ga = function () {
+        ga.q.push(arguments)
+    };
+    ga.q = [];
+    ga.l = +new Date;
+    ga('create', 'UA-XXXXX-Y', 'auto');
+    ga('send', 'pageview')
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async defer></script>
+</body>
+</html>
