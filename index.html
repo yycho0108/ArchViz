@@ -626,82 +626,77 @@ layout : default
                 .done(function(data) {
                     console.log("good");
                     console.log(data);
+                    //if (err) throw err;
+                    var root = d3.hierarchy(data)
+                        .sum(function (d) {
+                            return d.children.length > 0 ? 0 : 1;
+                        })
+                        //.count()//sum(function(d) { return d.value ? 1 : 0; })
+                        .sort(function (a, b) {
+                            return b.value - a.value;
+                        });
+
+                    var pack = d3.treemap()
+                        .size([500 - 4, 500 - 4])
+                        .padding(10);
+
+                    var node = g.selectAll(".node")
+                        .data(pack(root).descendants())
+                        .enter().append("g")
+                        .attr("class", function (d) {
+                            return d.children ? "node" : "leaf node";
+                        });
+
+                    node.append("rect")
+                        .attr("x", function (d) {
+                            return d.x0;
+                        })
+                        .attr("y", function (d) {
+                            return d.y0;
+                        })
+                        .attr("width", function (d) {
+                            return d.x1 - d.x0;
+                        })
+                        .attr("height", function (d) {
+                            return d.y1 - d.y0;
+                        });
+
+                    node.filter(function (d) {
+                        return !d.children;
+                    })
+                        .append("text")
+                        .attr("x", function (d) {
+                            return (d.x0 + d.x1) / 2.0;
+                        })
+                        .attr("y", function (d) {
+                            return (d.y0 + d.y1) / 2.0;
+                        })
+                        .attr("dy", "0.3em")
+                        .text(function (d) {
+                            return d.data.name;
+                        })
+                        .style("text-anchor", "middle");
+
+                    node.filter(function (d) {
+                        return d.children;
+                    })
+                        .append("text")
+                        .attr("x", function (d) {
+                            return (d.x0 + d.x1) / 2.0;
+                        })
+                        .attr("y", function (d) {
+                            return d.y0;
+                        })
+                        .attr("dy", "1em")
+                        .text(function (d) {
+                            return d.data.name;
+                        })
+                        .style("text-anchor", "middle");
                     // exists code
                 }).fail(function() {
                     console.log("bad");
                 // not exists code
             });
-
-            d3.json("assets/arch.json", function (data) {
-                console.log(data);
-                //if (err) throw err;
-                var root = d3.hierarchy(data)
-                    .sum(function (d) {
-                        return d.children.length > 0 ? 0 : 1;
-                    })
-                    //.count()//sum(function(d) { return d.value ? 1 : 0; })
-                    .sort(function (a, b) {
-                        return b.value - a.value;
-                    });
-
-                var pack = d3.treemap()
-                    .size([500 - 4, 500 - 4])
-                    .padding(10);
-
-                var node = g.selectAll(".node")
-                    .data(pack(root).descendants())
-                    .enter().append("g")
-                    .attr("class", function (d) {
-                        return d.children ? "node" : "leaf node";
-                    });
-
-                node.append("rect")
-                    .attr("x", function (d) {
-                        return d.x0;
-                    })
-                    .attr("y", function (d) {
-                        return d.y0;
-                    })
-                    .attr("width", function (d) {
-                        return d.x1 - d.x0;
-                    })
-                    .attr("height", function (d) {
-                        return d.y1 - d.y0;
-                    });
-
-                node.filter(function (d) {
-                    return !d.children;
-                })
-                    .append("text")
-                    .attr("x", function (d) {
-                        return (d.x0 + d.x1) / 2.0;
-                    })
-                    .attr("y", function (d) {
-                        return (d.y0 + d.y1) / 2.0;
-                    })
-                    .attr("dy", "0.3em")
-                    .text(function (d) {
-                        return d.data.name;
-                    })
-                    .style("text-anchor", "middle");
-
-                node.filter(function (d) {
-                    return d.children;
-                })
-                    .append("text")
-                    .attr("x", function (d) {
-                        return (d.x0 + d.x1) / 2.0;
-                    })
-                    .attr("y", function (d) {
-                        return d.y0;
-                    })
-                    .attr("dy", "1em")
-                    .text(function (d) {
-                        return d.data.name;
-                    })
-                    .style("text-anchor", "middle");
-
-            })
             //console.log(assets);
 
 //            var root = new GraphNode(svg, "root", "");
