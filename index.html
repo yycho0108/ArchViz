@@ -622,8 +622,18 @@ layout : default
                 g = svg.append("g").attr("transform", "translate(2,2)"),
                 format = d3.format(",d");
 
-            d3.json("assets/arch.json", function (err, data) {
-                if (err) throw err;
+            $.get("assets/arch.json")
+                .done(function() {
+                    console.log("good");
+                    // exists code
+                }).fail(function() {
+                    console.log("bad");
+                // not exists code
+            });
+
+            d3.json("assets/arch.json", function (data) {
+                console.log(data);
+                //if (err) throw err;
                 var root = d3.hierarchy(data)
                     .sum(function (d) {
                         return d.children.length > 0 ? 0 : 1;
