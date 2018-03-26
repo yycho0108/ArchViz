@@ -618,146 +618,77 @@
                 g = svg.append("g").attr("transform", "translate(2,2)"),
                 format = d3.format(",d");
 
-            console.log("??");
-            var data = {
-                "name": "Powered Mobility Architecture",
-                "parent": "null",
-                "children": [
-                    {
-                        "name": "Environment",
-                        "children": [
-                            {
-                                "name": "Simulation",
-                                "children": []
-                            },
-                            {
-                                "name": "Real Life",
-                                "children": []
-                            }
-                        ]
-                    },
-                    {
-                        "name": "Sense",
-                        "children": [
-                            {
-                                "name": "Obstacle Detection",
-                                "children": []
-                            },
-                            {
-                                "name": "Localization",
-                                "children": []
-                            },
-                            {
-                                "name": "Mapping",
-                                "children": []
-                            },
-                            {
-                                "name": "Object Detection",
-                                "children": []
-                            }
-                        ]
-                    },
-                    {
-                        "name": "Navigation",
-                        "children": [
-                            {
-                                "name": "Local Nav",
-                                "children" : [
-                                    {
-                                        "name" : "Obstacle Avoidance",
-                                        "children" : []
-                                    },
-                                    {
-                                        "name" : "Target Following",
-                                        "children" : []
-                                    }
 
-                                ]
-                            },
-                            {
-                                "name": "Global Nav",
-                                "children": []
-                            }
-                        ]
-                    },
-                    {
-                        "name": "Objective",
-                        "children": [
-                            {
-                                "name": "User Interface",
-                                "children": []
-                            },
-                            {
-                                "name": "Arbiter",
-                                "children": []
-                            },
-                            {
-                                "name": "Autonomy",
-                                "children": []
-                            }
-                        ]
-                    }
+            d3.json("./arch.json", function (err, data) {
+                if (err) throw err;
+                var root = d3.hierarchy(data)
+                    .sum(function (d) {
+                        return d.children.length > 0 ? 0 : 1;
+                    })
+                    //.count()//sum(function(d) { return d.value ? 1 : 0; })
+                    .sort(function (a, b) {
+                        return b.value - a.value;
+                    });
 
-                ]
-            };
+                var pack = d3.treemap()
+                    .size([500 - 4, 500 - 4])
+                    .padding(10);
+
+                var node = g.selectAll(".node")
+                    .data(pack(root).descendants())
+                    .enter().append("g")
+                    .attr("class", function (d) {
+                        return d.children ? "node" : "leaf node";
+                    });
+
+                node.append("rect")
+                    .attr("x", function (d) {
+                        return d.x0;
+                    })
+                    .attr("y", function (d) {
+                        return d.y0;
+                    })
+                    .attr("width", function (d) {
+                        return d.x1 - d.x0;
+                    })
+                    .attr("height", function (d) {
+                        return d.y1 - d.y0;
+                    });
+
+                node.filter(function (d) {
+                    return !d.children;
+                })
+                    .append("text")
+                    .attr("x", function (d) {
+                        return (d.x0 + d.x1) / 2.0;
+                    })
+                    .attr("y", function (d) {
+                        return (d.y0 + d.y1) / 2.0;
+                    })
+                    .attr("dy", "0.3em")
+                    .text(function (d) {
+                        return d.data.name;
+                    })
+                    .style("text-anchor", "middle");
+
+                node.filter(function (d) {
+                    return d.children;
+                })
+                    .append("text")
+                    .attr("x", function (d) {
+                        return (d.x0 + d.x1) / 2.0;
+                    })
+                    .attr("y", function (d) {
+                        return d.y0;
+                    })
+                    .attr("dy", "1em")
+                    .text(function (d) {
+                        return d.data.name;
+                    })
+                    .style("text-anchor", "middle");
+
+            })
             //console.log(data);
-            var root = d3.hierarchy(data)
-                .sum(function (d) {
-                    return d.children.length > 0 ? 0 : 1;
-                })
-                //.count()//sum(function(d) { return d.value ? 1 : 0; })
-                .sort(function (a, b) {
-                    return b.value - a.value;
-                });
-
-            var pack = d3.treemap()
-                .size([500 - 4, 500 - 4])
-                .padding(10);
-
-            var node = g.selectAll(".node")
-                .data(pack(root).descendants())
-                .enter().append("g")
-                .attr("class", function (d) {
-                    return d.children ? "node" : "leaf node";
-                });
-
-            node.append("rect")
-                .attr("x", function (d) {
-                    return d.x0;
-                })
-                .attr("y", function (d) {
-                    return d.y0;
-                })
-                .attr("width", function (d) {
-                    return d.x1-d.x0;
-                })
-                .attr("height", function (d) {
-                    return d.y1-d.y0;
-                });
-
-            node.filter(function(d) { return !d.children; })
-                .append("text")
-                .attr("x", function (d) {
-                    return (d.x0 + d.x1) / 2.0;
-                })
-                .attr("y", function (d) {
-                    return (d.y0 + d.y1) / 2.0;
-                })
-                .attr("dy", "0.3em")
-                .text(function(d) { return d.data.name;})
-                .style("text-anchor", "middle");
-
-            node.filter(function(d) { return d.children; })
-                .append("text")
-                .attr("x", function (d) {
-                    return (d.x0 + d.x1) / 2.0;
-                })
-                .attr("y", function (d) {
-                    return d.y0;
-                })
-                .attr("dy", "1em")
-                .text(function(d) { return d.data.name;})
-                .style("text-anchor", "middle");
 
 //            var root = new GraphNode(svg, "root", "");
 //            root.resize(500, 500);

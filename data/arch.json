@@ -1,88 +1,78 @@
 {
-    "name" : "Root",
-    "parent" : "null",
-    "children" : [
+    "name": "Powered Mobility Architecture",
+    "parent": "null",
+    "children": [
         {
-            "name" : "Environment",
-            "parent" : "Root",
-            "children" : [
+            "name": "Environment",
+            "children": [
                 {
-                    "name" : "Simulation",
-                    "parent" : "Environment",
-                    "children" : []
+                    "name": "Simulation",
+                    "children": []
                 },
                 {
-                    "name" : "Real Life",
-                    "parent" : "Environment",
-                    "children" : []
+                    "name": "Real Life",
+                    "children": []
                 }
             ]
         },
         {
-            "name" : "Sense",
-            "parent" : "Root",
-            "children" : [
+            "name": "Sense",
+            "children": [
                 {
-                    "name" : "Obstacle Detection",
-                    "parent" : "Sense",
-                    "children" : []
+                    "name": "Obstacle Detection",
+                    "children": []
                 },
                 {
-                    "name" : "Localization",
-                    "parent" : "Sense",
-                    "children" : []
+                    "name": "Localization",
+                    "children": []
                 },
                 {
-                    "name" : "Mapping",
-                    "parent" : "Sense",
-                    "children" : []
+                    "name": "Mapping",
+                    "children": []
                 },
                 {
-                    "name" : "Object Detection",
-                    "parent" : "Sense",
-                    "children" : []
+                    "name": "Object Detection",
+                    "children": []
                 }
             ]
         },
         {
-            "name" : "Navigation",
-            "parent" : "Root",
-            "children" : [
+            "name": "Navigation",
+            "children": [
                 {
-                    "name" : "Local Nav",
-                    "parent" : "Navigation",
+                    "name": "Local Nav",
                     "children" : [
                         {
-                            "name" : "Obstacle Avoidance"
+                            "name" : "Obstacle Avoidance",
+                            "children" : []
+                        },
+                        {
+                            "name" : "Target Following",
+                            "children" : []
                         }
 
                     ]
                 },
                 {
-                    "name" : "Global Nav",
-                    "parent" : "Navigation",
-                    "children" : []
+                    "name": "Global Nav",
+                    "children": []
                 }
             ]
         },
         {
-            "name" : "Objective",
-            "parent" : "Root",
-            "children" : [
+            "name": "Objective",
+            "children": [
                 {
-                    "name" : "User Interface",
-                    "parent" : "Objective",
-                    "children" : []
+                    "name": "User Interface",
+                    "children": []
                 },
                 {
-                    "name" : "Arbiter",
-                    "parent" : "Objective",
-                    "children" : []
+                    "name": "Arbiter",
+                    "children": []
                 },
                 {
-                    "name" : "Autonomy",
-                    "parent" : "Objective",
-                    "children" : []
+                    "name": "Autonomy",
+                    "children": []
                 }
             ]
         }
