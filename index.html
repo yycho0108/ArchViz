@@ -622,7 +622,7 @@ layout : default
                 g = svg.append("g").attr("transform", "translate(2,2)"),
                 format = d3.format(",d");
 
-            d3.json("{{'assets/arch.json' | relative_url }}", function (err, data) {
+            d3.json("assets/arch.json", function (err, data) {
                 if (err) throw err;
                 var root = d3.hierarchy(data)
                     .sum(function (d) {
