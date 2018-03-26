@@ -1,0 +1,91 @@
+{
+    "name" : "Root",
+    "parent" : "null",
+    "children" : [
+        {
+            "name" : "Environment",
+            "parent" : "Root",
+            "children" : [
+                {
+                    "name" : "Simulation",
+                    "parent" : "Environment",
+                    "children" : []
+                },
+                {
+                    "name" : "Real Life",
+                    "parent" : "Environment",
+                    "children" : []
+                }
+            ]
+        },
+        {
+            "name" : "Sense",
+            "parent" : "Root",
+            "children" : [
+                {
+                    "name" : "Obstacle Detection",
+                    "parent" : "Sense",
+                    "children" : []
+                },
+                {
+                    "name" : "Localization",
+                    "parent" : "Sense",
+                    "children" : []
+                },
+                {
+                    "name" : "Mapping",
+                    "parent" : "Sense",
+                    "children" : []
+                },
+                {
+                    "name" : "Object Detection",
+                    "parent" : "Sense",
+                    "children" : []
+                }
+            ]
+        },
+        {
+            "name" : "Navigation",
+            "parent" : "Root",
+            "children" : [
+                {
+                    "name" : "Local Nav",
+                    "parent" : "Navigation",
+                    "children" : [
+                        {
+                            "name" : "Obstacle Avoidance"
+                        }
+
+                    ]
+                },
+                {
+                    "name" : "Global Nav",
+                    "parent" : "Navigation",
+                    "children" : []
+                }
+            ]
+        },
+        {
+            "name" : "Objective",
+            "parent" : "Root",
+            "children" : [
+                {
+                    "name" : "User Interface",
+                    "parent" : "Objective",
+                    "children" : []
+                },
+                {
+                    "name" : "Arbiter",
+                    "parent" : "Objective",
+                    "children" : []
+                },
+                {
+                    "name" : "Autonomy",
+                    "parent" : "Objective",
+                    "children" : []
+                }
+            ]
+        }
+
+    ]
+}

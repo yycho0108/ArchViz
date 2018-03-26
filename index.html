@@ -6,6 +6,26 @@
     <title></title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+        rect, circle {
+            fill: rgb(31, 119, 180);
+            fill-opacity: .25;
+            stroke: rgb(31, 119, 180);
+            stroke-width: 1px;
+        }
+
+        .leaf circle {
+            fill: #ff7f0e;
+            fill-opacity: 1;
+        }
+
+        text {
+            font: 10px sans-serif;
+            text-anchor: middle;
+        }
+
+    </style>
     <script
         src="https://code.jquery.com/jquery-3.3.1.js"
         integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
@@ -148,50 +168,62 @@
             this.svg.attr('transform', xstring);
         };
 
-        GraphNode.prototype.layout = function () {
+        GraphNode.prototype.influence = function (target) {
+            var nodes0 = this.nodes();
+            var nodes1 = target.nodes();
+            var res = 0;
 
-            if (!(this === this.root)) {
-                console.log("Must Be Invoked From Root!");
-                return;
+            for (var i0 in nodes0) {
+                var node0 = nodes0[i0];
+                for (var i1 in nodes1) {
+                    var node1 = nodes1[i1];
+                    res += (node0.targets.indexOf(node1) > -1) ? 1 : 0;
+                    res += (node1.targets.indexOf(node0) > -1) ? 1 : 0;
+                }
             }
+            return res;
+        };
+
+        GraphNode.prototype.organize1 = function (sizes) {
+
             var ni, ci, ti;
             var node, snode;
             var child, target;
-            var nodes = this.nodes();
-            var graph = new Springy.Graph();
-            var snodes = {};
 
-            console.log(nodes);
+            var nodes = this.children;
+
+            var ps = [];
+            var vs = [];
+            var as = [];
+
+            var n = nodes.length;
+            var ks = new Array(n);
 
             for (ni in nodes) {
                 node = nodes[ni];
-                snode = graph.newNode({
-                    label: node.name,
-                    mass : 1.0/node.mass,
-                });
-                snodes[node.name] = snode;
+
+                var p = [10.0 * (Math.random() - 0.5), 10.0 * (Math.random() - 0.5)];
+                var v = [0, 0];
+                ps.push(p);
+                vs.push(v);
+            }
+
+            // compute spring constants
+            for (var i = 0; i < n; ++i) {
+                for (var j = i + 1; j < n; ++j) {
+                    ks[i][j] = ks[j][i] = nodes[i].influence(nodes[j]);
+                }
             }
 
             for (ni in nodes) {
                 node = nodes[ni];
-
-                // 1 : add edge from parent to child
-                for (ci in node.children) {
-                    child = node.children[ci];
-                    graph.newEdge(snodes[node.name], snodes[child.name],
-                        {
-                            length : 1.0,
-                            k : 400.0
-                        });
-                }
-
                 // 2 : add edge from defined connections
                 for (ti in node.targets) {
                     target = node.targets[ti];
                     graph.newEdge(snodes[node.name], snodes[target.name],
                         {
-                            length : 1.0,
-                            k : 100.0 // weaker spring
+                            length: 1.0,
+                            k: 100.0 // weaker spring
                         }
                     );
                 }
@@ -206,9 +238,9 @@
             );
 
             // todo : configure steps, etc.
-            for(var i=0; i<1000000; ++i){
+            for (var i = 0; i < 1000000; ++i) {
 
-                layout.eachEdge(function(edge, spring){
+                layout.eachEdge(function (edge, spring) {
                     var d = spring.point2.p.subtract(spring.point1.p); // the direction of the spring
                     var displacement = spring.length - d.magnitude();
                     var direction = d.normalise();
@@ -221,7 +253,91 @@
                 layout.tick(0.02);
             }
 
-            for (ni in nodes){
+            for (ni in nodes) {
+                node = nodes[ni];
+                snode = snodes[node.name];
+                var p = layout.point(snode).p;
+                console.log(node.name, p.x, p.y);
+                //remember position
+            }
+            //layout.nodePoints[node
+        };
+
+        GraphNode.prototype.layout = function () {
+
+            /*if (!(this === this.root)) {
+                console.log("Must Be Invoked From Root!");
+                return;
+            }*/
+
+            var ni, ci, ti;
+            var node, snode;
+            var child, target;
+            var nodes = this.nodes();
+            var graph = new Springy.Graph();
+            var snodes = {};
+
+            console.log(nodes);
+
+            for (ni in nodes) {
+                node = nodes[ni];
+                snode = graph.newNode({
+                    label: node.name,
+                    mass: 1.0 / node.mass,
+                });
+                snodes[node.name] = snode;
+            }
+
+            for (ni in nodes) {
+                node = nodes[ni];
+
+                // 1 : add edge from parent to child
+                for (ci in node.children) {
+                    child = node.children[ci];
+                    graph.newEdge(snodes[node.name], snodes[child.name],
+                        {
+                            length: 1.0,
+                            k: 400.0
+                        });
+                }
+
+                // 2 : add edge from defined connections
+                for (ti in node.targets) {
+                    target = node.targets[ti];
+                    graph.newEdge(snodes[node.name], snodes[target.name],
+                        {
+                            length: 1.0,
+                            k: 100.0 // weaker spring
+                        }
+                    );
+                }
+            }
+
+            // todo : configure params
+            var layout = new Springy.Layout.ForceDirected(
+                graph,
+                0.0, // Override Spring Stiffness
+                200.0, // "Node Repulsion"
+                0.5 // Damping
+            );
+
+            // todo : configure steps, etc.
+            for (var i = 0; i < 1000000; ++i) {
+
+                layout.eachEdge(function (edge, spring) {
+                    var d = spring.point2.p.subtract(spring.point1.p); // the direction of the spring
+                    var displacement = spring.length - d.magnitude();
+                    var direction = d.normalise();
+
+                    // apply force to each end point
+                    spring.point1.applyForce(direction.multiply(edge.data.k * displacement * -0.5));
+                    spring.point2.applyForce(direction.multiply(edge.data.k * displacement * 0.5));
+                });
+
+                layout.tick(0.02);
+            }
+
+            for (ni in nodes) {
                 node = nodes[ni];
                 snode = snodes[node.name];
                 var p = layout.point(snode).p;
@@ -449,12 +565,12 @@
             return g;
         }
 
-        function qn(parent, name){
+        function qn(parent, name) {
             // shortcut
             return new GraphNode(parent, name);
         }
 
-        function pm_arch(root){
+        function pm_arch(root) {
 
             var n_env = qn(root, "Environment");
             var n_sen = qn(root, "Sensing");
@@ -491,25 +607,174 @@
             n_usr.connect(n_arb);
 
             n_arb.connect(n_nav);
-
-
         }
+
         $(document).ready(function () {
             var svg = d3.select("body").append("svg")
                 .attr("width", 500)
                 .attr("height", 500);
 
+            var diameter = +svg.attr("width"),
+                g = svg.append("g").attr("transform", "translate(2,2)"),
+                format = d3.format(",d");
 
-            var root = new GraphNode(svg, "root", "");
-            root.resize(500, 500);
-            pm_arch(root);
+            console.log("??");
+            var data = {
+                "name": "Powered Mobility Architecture",
+                "parent": "null",
+                "children": [
+                    {
+                        "name": "Environment",
+                        "children": [
+                            {
+                                "name": "Simulation",
+                                "children": []
+                            },
+                            {
+                                "name": "Real Life",
+                                "children": []
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Sense",
+                        "children": [
+                            {
+                                "name": "Obstacle Detection",
+                                "children": []
+                            },
+                            {
+                                "name": "Localization",
+                                "children": []
+                            },
+                            {
+                                "name": "Mapping",
+                                "children": []
+                            },
+                            {
+                                "name": "Object Detection",
+                                "children": []
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Navigation",
+                        "children": [
+                            {
+                                "name": "Local Nav",
+                                "children" : [
+                                    {
+                                        "name" : "Obstacle Avoidance",
+                                        "children" : []
+                                    },
+                                    {
+                                        "name" : "Target Following",
+                                        "children" : []
+                                    }
 
-            // final calls ...
-            root.expand();
-            //root.organize();
-            root.layout();
-            root.update();
-            root.show();
+                                ]
+                            },
+                            {
+                                "name": "Global Nav",
+                                "children": []
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Objective",
+                        "children": [
+                            {
+                                "name": "User Interface",
+                                "children": []
+                            },
+                            {
+                                "name": "Arbiter",
+                                "children": []
+                            },
+                            {
+                                "name": "Autonomy",
+                                "children": []
+                            }
+                        ]
+                    }
+
+                ]
+            };
+            //console.log(data);
+            var root = d3.hierarchy(data)
+                .sum(function (d) {
+                    return d.children.length > 0 ? 0 : 1;
+                })
+                //.count()//sum(function(d) { return d.value ? 1 : 0; })
+                .sort(function (a, b) {
+                    return b.value - a.value;
+                });
+
+            var pack = d3.treemap()
+                .size([500 - 4, 500 - 4])
+                .padding(10);
+
+            var node = g.selectAll(".node")
+                .data(pack(root).descendants())
+                .enter().append("g")
+                .attr("class", function (d) {
+                    return d.children ? "node" : "leaf node";
+                });
+
+            node.append("rect")
+                .attr("x", function (d) {
+                    return d.x0;
+                })
+                .attr("y", function (d) {
+                    return d.y0;
+                })
+                .attr("width", function (d) {
+                    return d.x1-d.x0;
+                })
+                .attr("height", function (d) {
+                    return d.y1-d.y0;
+                });
+
+            node.filter(function(d) { return !d.children; })
+                .append("text")
+                .attr("x", function (d) {
+                    return (d.x0 + d.x1) / 2.0;
+                })
+                .attr("y", function (d) {
+                    return (d.y0 + d.y1) / 2.0;
+                })
+                .attr("dy", "0.3em")
+                .text(function(d) { return d.data.name;})
+                .style("text-anchor", "middle");
+
+            node.filter(function(d) { return d.children; })
+                .append("text")
+                .attr("x", function (d) {
+                    return (d.x0 + d.x1) / 2.0;
+                })
+                .attr("y", function (d) {
+                    return d.y0;
+                })
+                .attr("dy", "1em")
+                .text(function(d) { return d.data.name;})
+                .style("text-anchor", "middle");
+
+//            var root = new GraphNode(svg, "root", "");
+//            root.resize(500, 500);
+//            pm_arch(root);
+//
+//            var pack = d3.pack()
+//                .size(500, 500)
+//                .padding(10);
+//            var nodes = pack(root.svg);
+//            console.log(nodes);
+//
+//            // final calls ...
+//            root.expand();
+//            //root.organize();
+//            root.layout();
+//            root.update();
+//            root.show();
 
         });
 
