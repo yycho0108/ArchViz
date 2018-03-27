@@ -13,10 +13,10 @@ layout : default
     <style>
 
         rect, circle {
-            fill: rgb(31, 119, 180);
-            fill-opacity: .25;
-            stroke: rgb(31, 119, 180);
-            stroke-width: 1px;
+            fill: rgb(31, 119, 90);
+            fill-opacity: 1;
+            /*stroke: rgb(31, 119, 180);
+            stroke-width: 1px;*/
         }
 
         .leaf circle {
@@ -27,6 +27,17 @@ layout : default
         text {
             font: 10px sans-serif;
             text-anchor: middle;
+        }
+
+        .highlight {
+            fill: rgb(255, 255, 255);
+
+        }
+
+        .expandBtn {
+            fill: rgb(255, 158, 85);
+            stroke: rgb(255, 128, 50);
+            fill-opacity: 1;
         }
 
     </style>
@@ -613,6 +624,126 @@ layout : default
             n_arb.connect(n_nav);
         }
 
+        var root;
+        var accent = d3.scaleOrdinal(d3.schemeSet3);
+
+        function build(proot, groot, depth) {
+            depth = (typeof depth === 'undefined' ? 0 : depth);
+
+            var gv = groot.append("g")
+                .attr("class", "viz");// g-viz
+            var gc = groot.append("g")
+                .attr("class", "children");// g-children
+
+            var n = (typeof proot.children === "undefined" ? 0 : proot.children.length);
+
+            if (n > 0) {
+                var es = [];
+                for (var i = 0; i < n; ++i) {
+                    var g = gc.append("g");
+                    build(proot.children[i], g, depth + 1);
+                }
+            }
+
+            proot.expanded = false;
+            var x = proot.x0;
+            var y = proot.y0;
+            var w = proot.x1 - proot.x0;
+            var h = proot.y1 - proot.y0;
+
+            console.log(proot);
+            var rect = gv.append("rect")
+                .datum(proot)
+                .attr("x", function (d) {
+                    return d.x0;
+                })
+                .attr("y", function (d) {
+                    return d.y0;
+                })
+                .attr("width", function (d) {
+                    return d.x1 - d.x0;
+                })
+                .attr("height", function (d) {
+                    return d.y1 - d.y0;
+                })
+                .attr("rx", function (d) {
+                    return (d.x1 - d.x0) / 16.
+                })
+                .attr("ry", function (d) {
+                    return (d.y1 - d.y0) / 16.
+                })
+                .style("fill", accent(depth));
+
+            var txt = gv.append("text")
+                .datum(proot)
+                .attr("x", function (d) {
+                    return (d.x0 + d.x1) / 2.0;
+                })
+                .attr("y", function (d) {
+                    return d.expanded ? d.y0 : (d.y0 + d.y1) / 2.0;
+                })
+                .text(proot.data.name)
+                .style("text-anchor", "middle");
+
+            gv.on('mouseover', function (d, i) {
+                gv.classed("highlight", true);
+            });
+            gv.on('mouseout', function (d, i) {
+                gv.classed("highlight", false);
+            });
+
+            if (n > 0) {
+
+                //expansion button
+//                var btn = gv.append("rect")
+//                    .datum(proot)
+//                    .attr("x", function(d){
+//                        var w = d.x1 - d.x0;
+//                        return d.x0 + w / 16.;
+//                    })
+//                    .attr("y", function(d){
+//                        var h = d.y1 - d.y0;
+//                        return d.y0 + h / 16.;
+//                    })
+//                    .attr("width", function(d){
+//                        return (d.x1-d.x0)/16.;
+//                    })
+//                    .attr("height", function(d){
+//                        return (d.y1-d.y0)/16.;
+//                    })
+//                    .classed("expandBtn", true);
+
+
+                gc.attr('visibility', 'hidden');
+                gv.on('dblclick', function () {
+                    proot.expanded = !proot.expanded;
+                    if (proot.expanded) {
+                        gc.attr('visibility', 'visible');
+                        txt.attr('y', proot.y0);
+                    } else {
+                        gc.attr('visibility', 'hidden');
+                        txt.attr('y', (proot.y0 + proot.y1) / 2.0);
+                    }
+                    //gc.attr('visibility', proot.expanded?'visible':'hidden');
+                    //txt.attr("y", 0);
+                });
+
+                /*
+                gv.on('mouseenter', function(data){
+                    gc.attr('visibility', 'visible');
+                    txt.attr("y", 0);
+                }).on('mouseleave', function(data){
+                    gc.attr('visibility', 'hidden');
+                    txt.attr("y", y + h / 2);
+                });
+                */
+            } else {
+
+            }
+
+            return;
+        }
+
         $(document).ready(function () {
             var svg = d3.select("body").append("svg")
                 .attr("width", 500)
@@ -623,11 +754,9 @@ layout : default
                 format = d3.format(",d");
 
             $.get("assets/arch.json")
-                .done(function(data) {
-                    console.log("good");
-                    console.log(data);
+                .done(function (data) {
                     //if (err) throw err;
-                    var root = d3.hierarchy(data)
+                    root = d3.hierarchy(data)
                         .sum(function (d) {
                             return d.children.length > 0 ? 0 : 1;
                         })
@@ -640,61 +769,78 @@ layout : default
                         .size([500 - 4, 500 - 4])
                         .padding(10);
 
-                    var node = g.selectAll(".node")
-                        .data(pack(root).descendants())
-                        .enter().append("g")
-                        .attr("class", function (d) {
-                            return d.children ? "node" : "leaf node";
-                        });
 
-                    node.append("rect")
-                        .attr("x", function (d) {
-                            return d.x0;
-                        })
-                        .attr("y", function (d) {
-                            return d.y0;
-                        })
-                        .attr("width", function (d) {
-                            return d.x1 - d.x0;
-                        })
-                        .attr("height", function (d) {
-                            return d.y1 - d.y0;
-                        });
+                    build(pack(root), g);
+//
+//                    var node = g.selectAll(".node")
+//                        .data(pack(root).descendants())
+//                        .enter().append("g")
+//                        .attr("class", function (d) {
+//                            return d.children ? "node" : "leaf node";
+//                        });
+//
+//                    node.append("rect")
+//                        .attr("x", function (d) {
+//                            return d.x0;
+//                        })
+//                        .attr("y", function (d) {
+//                            return d.y0;
+//                        })
+//                        .attr("width", function (d) {
+//                            return d.x1 - d.x0;
+//                        })
+//                        .attr("height", function (d) {
+//                            return d.y1 - d.y0;
+//                        })
+//                        .attr("rx", function(d){
+//                            return (1./16) * (d.x1 - d.x0);
+//                        })
+//                        .attr("ry", function(d){
+//                            return (1./16) * (d.y1 - d.y0);
+//                        });
+//
+//                    node.filter(function (d) {
+//                        return !d.children;
+//                    })
+//                        .append("text")
+//                        .attr("x", function (d) {
+//                            return (d.x0 + d.x1) / 2.0;
+//                        })
+//                        .attr("y", function (d) {
+//                            return (d.y0 + d.y1) / 2.0;
+//                        })
+//                        .attr("dy", "0.3em")
+//                        .text(function (d) {
+//                            return d.data.name;
+//                        })
+//                        .style("text-anchor", "middle");
+//
+//                    node.filter(function (d) {
+//                        return d.children;
+//                    })
+//                        .append("text")
+//                        .attr("x", function (d) {
+//                            return (d.x0 + d.x1) / 2.0;
+//                        })
+//                        .attr("y", function (d) {
+//                            return d.y0;
+//                        })
+//                        .attr("dy", "1em")
+//                        .text(function (d) {
+//                            return d.data.name;
+//                        })
+//                        .style("text-anchor", "middle");
+//
+//                    // exists code
+//
+//                    node.filter(function(d){
+//                       return d.children;
+//                    }).selectAll("*")
+//                        .select(".leaf")
+//                        .attr("visibility", "hidden");
 
-                    node.filter(function (d) {
-                        return !d.children;
-                    })
-                        .append("text")
-                        .attr("x", function (d) {
-                            return (d.x0 + d.x1) / 2.0;
-                        })
-                        .attr("y", function (d) {
-                            return (d.y0 + d.y1) / 2.0;
-                        })
-                        .attr("dy", "0.3em")
-                        .text(function (d) {
-                            return d.data.name;
-                        })
-                        .style("text-anchor", "middle");
-
-                    node.filter(function (d) {
-                        return d.children;
-                    })
-                        .append("text")
-                        .attr("x", function (d) {
-                            return (d.x0 + d.x1) / 2.0;
-                        })
-                        .attr("y", function (d) {
-                            return d.y0;
-                        })
-                        .attr("dy", "1em")
-                        .text(function (d) {
-                            return d.data.name;
-                        })
-                        .style("text-anchor", "middle");
-                    // exists code
-                }).fail(function() {
-                    console.log("bad");
+                }).fail(function () {
+                console.log("bad");
                 // not exists code
             });
             //console.log(assets);
