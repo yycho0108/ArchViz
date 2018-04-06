@@ -50,15 +50,16 @@ var ArchViz = function(svg, graph){
     this.simulation.on("tick", function(){self.onTick();});
 };
 
-function getPoints(root, index){
+function getPoints(root, index, depth){
     var res = [];
     root.children.forEach(function(c){
         res.push(c);
-        res = res.concat(getPoints(c, index));
+        res = res.concat(getPoints(c, index, depth+1));
     });
     index.push({
         "id" : "h-" + root.id,
-        "points" : res
+        "points" : res,
+        "depth" : depth
     });
     return res;
 }
@@ -107,7 +108,7 @@ ArchViz.prototype.rebuild = function(){
 
     // 3. create hulls definitions
     var hulls  = [];
-    getPoints(this.root, hulls);
+    getPoints(this.root, hulls, 0);
     console.log(hulls);
 
     this.data_nodes = leafs;
@@ -144,7 +145,7 @@ ArchViz.prototype.update = function(){
 
     var node = this.g_node
         .selectAll("circle")
-        .data(this.data_nodes, function(d){return d.id;});
+        .data(this.data_nodes, function(d){return d.id + "" +  d.expanded;});
     node.exit().remove(); // remove old ones
 
     var new_leafs = node.enter().filter(function(d){return !d.expanded});
@@ -157,7 +158,7 @@ ArchViz.prototype.update = function(){
         .on("mousedown", function(){
             var id=d3.select(this).attr("id");
             self.data_nodes.forEach(function(e){
-                if(e.id === id){
+                if(e.id === id && e.children.length > 0){
                     e.expanded = !e.expanded;
                     self.restart();
                 }
@@ -165,7 +166,9 @@ ArchViz.prototype.update = function(){
         })
         .attr("visibility", function(d){
             //return "visible";
-            return (d.expanded || d.hidden)?"hidden":"visible";
+            //return (d.expanded || d.hidden)?"hidden":"visible";
+            // TODO : enable region click to toggle visibility
+            return d.hidden?"hidden":"visible";
         })
         //.attr("fill", function(d) { return color(d.group); })
         .call(d3.drag()
@@ -201,7 +204,21 @@ ArchViz.prototype.update = function(){
     this.hulls = hull.enter().append("path")
         .attr("stroke-width", 1.0)
         .attr("fill-opacity", 0.1)
+        .on("mousedown", function(){
+            var id=d3.select(this).attr("id");
+            self.data_nodes.forEach(function(e){
+                if("h-"+e.id === id){
+                    e.expanded = !e.expanded;
+                    self.restart();
+                }
+            });
+        })
         .merge(hull);
+    this.hulls.sort(function(a,b){
+        if(a.depth < b.depth) return -1;
+        else if (a.id < b.id) return -1;
+        else return 1;
+    })
 };
 
 ArchViz.prototype.restart = function(){
