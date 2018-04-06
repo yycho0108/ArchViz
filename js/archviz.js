@@ -5,7 +5,6 @@ var ArchViz = function(svg, graph){
 
     // canvas
     this.svg = svg;
-
     this.g_link = svg.append("g").attr("class", "links");
     this.g_hull = svg.append("g").attr("class", "hulls");
     this.g_node = svg.append("g").attr("class", "nodes");
@@ -16,7 +15,7 @@ var ArchViz = function(svg, graph){
 
     // graphics parameters
     this.g_params = {
-
+        "color" : d3.scaleSequential(function(t){return d3.interpolateRainbow(t/20.0);})
     };
 
     // data
@@ -203,7 +202,8 @@ ArchViz.prototype.update = function(){
     hull.exit().remove();
     this.hulls = hull.enter().append("path")
         .attr("stroke-width", 1.0)
-        .attr("fill-opacity", 0.1)
+        .attr("fill-opacity", 0.2)
+        .attr("fill", function(d, i){return self.g_params["color"](i);})
         .on("mousedown", function(){
             var id=d3.select(this).attr("id");
             self.data_nodes.forEach(function(e){
