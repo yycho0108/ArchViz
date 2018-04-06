@@ -1,81 +1,101 @@
 {
-    "name": "Powered Mobility Architecture",
-    "parent": "null",
-    "children": [
+    "nodes": {
+        "id": "Powered Mobility Architecture",
+        "parent": "null",
+        "children": [
+            {
+                "id": "Environment",
+                "children": [
+                    {
+                        "id": "Simulation",
+                        "children": []
+                    },
+                    {
+                        "id": "Real Life",
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "Sense",
+                "children": [
+                    {
+                        "id": "Obstacle Detection",
+                        "children": []
+                    },
+                    {
+                        "id": "Localization",
+                        "children": []
+                    },
+                    {
+                        "id": "Mapping",
+                        "children": []
+                    },
+                    {
+                        "id": "Object Detection",
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "Navigation",
+                "children": [
+                    {
+                        "id": "Local Nav",
+                        "children": [
+                            {
+                                "id": "Obstacle Avoidance",
+                                "children": []
+                            },
+                            {
+                                "id": "Target Following",
+                                "children": []
+                            }
+                        ]
+                    },
+                    {
+                        "id": "Global Nav",
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "Objective",
+                "children": [
+                    {
+                        "id": "User Interface",
+                        "children": []
+                    },
+                    {
+                        "id": "Arbiter",
+                        "children": []
+                    },
+                    {
+                        "id": "Autonomy",
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    },
+    "links": [
         {
-            "name": "Environment",
-            "children": [
-                {
-                    "name": "Simulation",
-                    "children": []
-                },
-                {
-                    "name": "Real Life",
-                    "children": []
-                }
-            ]
+            "id": "Terrain",
+            "source": "Environment",
+            "target": "Sense",
+            "value" : 1
         },
         {
-            "name": "Sense",
-            "children": [
-                {
-                    "name": "Obstacle Detection",
-                    "children": []
-                },
-                {
-                    "name": "Localization",
-                    "children": []
-                },
-                {
-                    "name": "Mapping",
-                    "children": []
-                },
-                {
-                    "name": "Object Detection",
-                    "children": []
-                }
-            ]
+            "id" : "Move",
+            "source" : "Navigation",
+            "target" : "Environment",
+            "value" : 1
         },
         {
-            "name": "Navigation",
-            "children": [
-                {
-                    "name": "Local Nav",
-                    "children" : [
-                        {
-                            "name" : "Obstacle Avoidance",
-                            "children" : []
-                        },
-                        {
-                            "name" : "Target Following",
-                            "children" : []
-                        }
-
-                    ]
-                },
-                {
-                    "name": "Global Nav",
-                    "children": []
-                }
-            ]
-        },
-        {
-            "name": "Objective",
-            "children": [
-                {
-                    "name": "User Interface",
-                    "children": []
-                },
-                {
-                    "name": "Arbiter",
-                    "children": []
-                },
-                {
-                    "name": "Autonomy",
-                    "children": []
-                }
-            ]
+            "id" : "Obstacles",
+            "source" : "Environment",
+            "target" : "Navigation",
+            "value" : 1
         }
-
     ]
 }
