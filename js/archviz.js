@@ -64,7 +64,10 @@ function getPoints(root, index, depth){
     return res;
 }
 
-function updateHullPoints(nodeid, nodes){
+function updateHullPoints(nodeid, nodes, delta){
+
+    delta = (typeof delta === 'undefined' ? 5.0 : delta);
+
     var res = null;
     nodes.forEach(function(node){
         if(node.id === nodeid){
@@ -72,7 +75,7 @@ function updateHullPoints(nodeid, nodes){
 
             if(node.expanded && node.children.length > 0){
                 node.children.forEach(function(c){
-                    res = res.concat(updateHullPoints(c.id, nodes));
+                    res = res.concat(updateHullPoints(c.id, nodes, delta));
                 });
             }
 
@@ -188,8 +191,8 @@ ArchViz.prototype.update = function(){
         })
         .attr("visibility", function(d){
             //return "visible";
-            return (d.expanded || d.hidden)?"hidden":"visible";
-            //return d.hidden?"hidden":"visible";
+            //return (d.expanded || d.hidden)?"hidden":"visible";
+            return d.hidden?"hidden":"visible";
         })
         //.attr("fill", function(d) { return color(d.group); })
         .call(d3.drag()
@@ -288,7 +291,7 @@ ArchViz.prototype.onTick = function(){
             return d.y;
         });
 
-    updateHullPoints(self.root.id, self.data_nodes);
+    updateHullPoints(self.root.id, self.data_nodes, 10);
 
     this.hulls
         .attr("id", function(d){return d.id;})
