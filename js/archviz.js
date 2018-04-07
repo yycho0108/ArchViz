@@ -57,8 +57,31 @@ function getPoints(root, index, depth){
     });
     index.push({
         "id" : "h-" + root.id,
+        "name" : root.name,
         "points" : res,
         "depth" : depth
+    });
+    return res;
+}
+
+function updateHullPoints(nodeid, nodes){
+    var res = null;
+    nodes.forEach(function(node){
+        if(node.id === nodeid){
+            res = [[node.x, node.y]];
+
+            if(node.expanded && node.children.length > 0){
+                node.children.forEach(function(c){
+                    res = res.concat(updateHullPoints(c.id, nodes));
+                });
+            }
+
+            if(res.length >= 3){
+                res = d3.polygonHull(res);
+                res = expandPoints(res, 5.0);
+            }
+            node.hull = res;
+        }
     });
     return res;
 }
@@ -165,9 +188,8 @@ ArchViz.prototype.update = function(){
         })
         .attr("visibility", function(d){
             //return "visible";
-            //return (d.expanded || d.hidden)?"hidden":"visible";
-            // TODO : enable region click to toggle visibility
-            return d.hidden?"hidden":"visible";
+            return (d.expanded || d.hidden)?"hidden":"visible";
+            //return d.hidden?"hidden":"visible";
         })
         //.attr("fill", function(d) { return color(d.group); })
         .call(d3.drag()
@@ -200,7 +222,7 @@ ArchViz.prototype.update = function(){
         .selectAll("path")
         .data(this.data_hulls, function(d){return d.id;});
     hull.exit().remove();
-    this.hulls = hull.enter().append("path")
+    var new_hulls = hull.enter().append("path")
         .attr("stroke-width", 1.0)
         .attr("fill-opacity", 0.2)
         .attr("fill", function(d, i){return self.g_params["color"](i);})
@@ -212,8 +234,14 @@ ArchViz.prototype.update = function(){
                     self.restart();
                 }
             });
-        })
-        .merge(hull);
+        });
+
+    new_hulls.append("title")
+        .text(function (d) {
+            return d.name;
+        });
+
+    this.hulls = new_hulls.merge(hull);
     this.hulls.sort(function(a,b){
         if(a.depth < b.depth) return -1;
         else if (a.id < b.id) return -1;
@@ -260,41 +288,56 @@ ArchViz.prototype.onTick = function(){
             return d.y;
         });
 
+    updateHullPoints(self.root.id, self.data_nodes);
 
     this.hulls
         .attr("id", function(d){return d.id;})
         .attr("d", function(d){
-        var x0, y0;
-        for(var di in self.data_nodes){
-            var dn = self.data_nodes[di];
-            if (d.id === "h-"+dn.id){
-                x0=dn.x;
-                y0=dn.y;
-            }
-        }
-
-        var points = [[x0,y0]];
-        for(var pi in d.points){
-            var p = d.points[pi];
-
-            for(var di in self.data_nodes){
+        var hull = null;
+            for (var di in self.data_nodes) {
                 var dn = self.data_nodes[di];
-                if (p.id === dn.id){
-                   points = points.concat([[p.x, p.y]]);
+                if (d.id == "h-" + dn.id) {
+                    hull = dn.hull;
                 }
-            }
         }
-
-        var hull = d3.polygonHull(points);
         if(hull === null) return "M 0,0";
-        // console.log("points", points);
-        // console.log("hull", hull);
-        // console.log("hull", hull.join(" L"));
 
         return "M" + hull.join(" L") + " Z";
     });
 };
 
+function expandPoints(points, delta){
+    var n = points.length;
+
+    var new_points = [];
+
+    for(var i=0; i<n; ++i){
+        var dx0 = points[i][0] - points[(i+n-1)%n][0];
+        var dy0 = points[i][1] - points[(i+n-1)%n][1];
+        var r0 = Math.sqrt(dx0*dx0+dy0*dy0);
+        dx0 /= r0;
+        dy0 /= r0;
+
+        var dx1 = points[(i+1)%n][0] - points[i][0];
+        var dy1 = points[(i+1)%n][1] - points[i][1];
+        var r1 = Math.sqrt(dx1*dx1+dy1*dy1);
+        dx1 /= r1;
+        dy1 /= r1;
+
+        var c = -dy0;
+        var d = -dy1;
+        var e = dx0;
+        var f = dx1;
+        var g = delta;
+
+        var a = (g*e-g*f)/(e*d-c*f);
+        var b = (g-a*c)/e;
+
+        new_points.push([points[i][0]+a, points[i][1]+b]);
+    }
+
+    return new_points;
+}
 function archbuild(graph, svg, width, height) {
 
     // svg.append("defs")
