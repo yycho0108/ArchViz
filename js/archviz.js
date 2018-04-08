@@ -226,7 +226,8 @@ ArchViz.prototype.update = function(){
         .data(this.data_hulls, function(d){return d.id;});
     hull.exit().remove();
     var new_hulls = hull.enter().append("path")
-        .attr("stroke-width", 1.0)
+        .attr("stroke-width", 2.0)
+        .attr("stroke", 'white')
         .attr("fill-opacity", 0.2)
         .attr("fill", function(d, i){return self.g_params["color"](i);})
         .on("mousedown", function(){

@@ -20,16 +20,21 @@
                 "id": "Sense",
                 "children": [
                     {
-                        "id": "Obstacle Detection",
-                        "children": []
-                    },
-                    {
                         "id": "Localization",
                         "children": []
                     },
                     {
                         "id": "Mapping",
-                        "children": []
+                        "children": [
+                            {
+                            "id" : "Obstacle Detection",
+                            "children" : []
+                            },
+                            {
+                            "id" : "Terrain Mapping",
+                            "children" : []
+                            }
+                        ]
                     },
                     {
                         "id": "Object Detection",
